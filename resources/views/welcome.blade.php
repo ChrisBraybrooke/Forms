@@ -4,8 +4,7 @@
   <div class="container text-center">
     <h2>Contribute to the Cheshire Maverick's Dinner</h2>
     <h5 class="mb-5">Upload your favourite Mav images!</h5>
-    <file-upload-button api-url="{{ url('api') }}"
-                        :button="{text: 'Upload Images'}">
-    </file-upload-button>
+    <file-upload-component api-url="{{ url('api') }}"></file-upload-component>
+    <p>Powered by <a href="https://purplemountmedia.com" tile="Purple Mountain">Purple Mountain</a>, Wilmslow based Web Design & Build.</p>
   </div>
 @endsection

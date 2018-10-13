@@ -7,6 +7,7 @@
 
 require('./bootstrap');
 
+import 'babel-polyfill'
 window.Vue = require('vue');
 
 /**
@@ -16,6 +17,7 @@ window.Vue = require('vue');
  */
 
 Vue.component('file-upload-button', require('./components/FileUploadButton.vue'));
+Vue.component('file-upload-component', require('./components/FileUploadComponent.vue'));
 
 const app = new Vue({
     el: '#app'

@@ -10,17 +10,19 @@ class ApiUploadController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'file' => 'file'
+            'file' => 'file',
+            'name' => 'required'
         ]);
 
         $gallery = Gallery::firstOrCreate(['name' => 'Uploads']);
 
         $media = $gallery->addMediaFromRequest('file')
+                         ->withCustomProperties(['name' => $request->name])
                          ->sanitizingFileName(function ($fileName) {
                             return strtolower(str_replace(['#', '/', '\\', ' '], '-', $fileName));
                          })
                          ->toMediaCollection('uploads');
-                         
+
         return ['data' => $media];
     }
 }

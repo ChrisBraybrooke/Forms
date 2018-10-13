@@ -40,4 +40,7 @@ return [
         ],
     ],
 
+    'dropbox' => [
+        'token' => env('DROPBOX_TOKEN')
+    ]
 ];

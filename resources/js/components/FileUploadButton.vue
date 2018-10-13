@@ -9,8 +9,8 @@
       @change="handleFiles"/>
     <button
       @click="$refs.files.click()"
-      :disabled="loading"
-      :class="mergedButton.class">{{ mergedButton.text }}
+      :disabled="loading || disabled"
+      :class="mergedButton.class">{{ loading ? mergedButton.loadingText : mergedButton.text }}
     </button>
 
     <slot
@@ -20,13 +20,17 @@
         <div
           v-for="(file, key) in files"
           :key="key"
-          :class="{'img_preview_wrap col-md-2 py-4 my-3': true, 'complete': file.id}">
-          {{ file.id }}
-          <img
-            v-if="file.preview"
-            :src="file.preview.url"
-            :alt="file.preview.name"
-            :class="{'img_preview mx-2': true, 'complete': file.id}">
+          :class="{'col-md-2 py-4 my-3': true}">
+          <div :class="{'img_preview_wrap p-4': true, 'complete': file.id}">
+            <p
+              v-if="file.id"
+              class="uploaded_text">Uploaded 👍</p>
+            <img
+              v-if="file.preview"
+              :src="file.preview.url"
+              :alt="file.preview.name"
+              :class="{'img_preview mx-2': true, 'complete': file.id}">
+          </div>
         </div>
       </div>
     </slot>
@@ -60,6 +64,16 @@ export default {
     apiUrl: {
       type: String,
       required: true
+    },
+    extraData: {
+      type: Object,
+      required: false,
+      default: () => { return {} }
+    },
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: () => { return falses }
     }
   },
 
@@ -75,7 +89,8 @@ export default {
     defaultButton () {
       return {
         class: 'btn btn-primary btn-lg',
-        text: 'Upload'
+        text: 'Upload',
+        loadingText: 'Uploading...'
       }
     },
 
@@ -124,26 +139,35 @@ export default {
           let formData = new FormData()
           formData.append('file', file)
 
-          window.axios.post(`${this.apiUrl}/upload`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
+          window._.forEach(this.extraData, (data, key) => {
+            formData.append(key, data)
           })
-            .then((data) => {
-              this.loading = false
-              file.id = data.data.data.id
-            })
-            .catch((data) => {
-              this.loading = false
-              console.log(data.response.status)
-              if (parseInt(data.response.status) === 404 || parseInt(data.response.status) === 500) {
-                this.errors = { message: 'Error connecting to the server...' }
-              } else {
-                this.errors = data.response.data
-              }
-            })
+
+          this.sendData(file, formData, fileKey)
         }
       })
+    },
+
+    sendData (file, formData, key) {
+      window.axios.post(`${this.apiUrl}/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then((data) => {
+          this.loading = false
+          this.$set(this.files[key], 'id', data.data.data.id)
+          this.$forceUpdate()
+        })
+        .catch((data) => {
+          this.loading = false
+          console.log(data.response.status)
+          if (parseInt(data.response.status) === 404 || parseInt(data.response.status) === 500) {
+            this.errors = { message: 'Error connecting to the server...' }
+          } else {
+            this.errors = data.response.data
+          }
+        })
     }
   }
 }
@@ -157,12 +181,20 @@ export default {
   .img_preview_wrap.complete::before {
       content: "";
       background: #00800033;
+      padding: 5px;
       display: block;
       position: absolute;
       width: 100%;
       height: 100%;
       left: 0;
-      right: 0;
+      top: 0;
       z-index: 100;
+  }
+  .img_preview_wrap {
+    position: relative;
+  }
+  p.uploaded_text {
+      font-weight: bold;
+      color: #405839;
   }
 </style>
