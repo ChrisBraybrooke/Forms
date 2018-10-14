@@ -1,7 +1,12 @@
 <template lang="html">
   <div>
-    <div class="py-3">
+    <div class="py-3 d-flex justify-content-between">
       {{ displayData }}
+      <button
+        type="button"
+        @click="filters.onlyStared = !filters.onlyStared"
+        :class="{'btn': true,  'btn-outline-primary': !filters.onlyStared, 'btn-primary': filters.onlyStared}"
+        name="button">Only Show <i class="far fa-star"></i></button>
     </div>
     <h2
       v-if="loading"
@@ -23,6 +28,9 @@
           <a
             :href="m.src"
             title="Download"><i class="far fa-download"></i></a>
+          <a
+            href="#"
+            @click="(e) => addStar(e, m)"><i :class="{'far': !stared.includes(m.id), 'fas': stared.includes(m.id), 'fa-star': true}"></i></a>
           <p class="mb-0"><i class="far fa-user-circle"></i> <strong v-if="m.custom">{{ m.custom.name }}</strong></p>
           <p><small><i class="far fa-clock"></i> <strong v-if="m.created_at">{{ m.created_at }}</strong></small></p>
       </div>
@@ -65,32 +73,61 @@ export default {
         next: `${this.apiUrl}/uploads`,
         prev: null
       },
-      meta: {}
+      meta: {},
+      stared: [],
+      filters: {
+        onlyStared: false
+      }
     }
   },
 
   mounted () {
+    if (localStorage.getItem('staredItems')) {
+      this.stared = JSON.parse(localStorage.getItem('staredItems'))
+    }
     this.getMedia()
   },
 
+  watch: {
+    stared (val) {
+      localStorage.setItem('staredItems', JSON.stringify(val))
+    }
+  },
+
   computed: {
+    filteredMedia () {
+      if (this.filters.onlyStared) {
+        return window._.filter(this.media, (m) => { return this.stared.includes(m.id) })
+      }
+      return this.media
+    },
+
     chunkedMedia () {
-      return window._.chunk(this.media, 4)
+      return window._.chunk(this.filteredMedia, 4)
     },
 
     displayData () {
-      return this.meta.total ? `Showing ${this.meta.to} out of ${this.meta.total}` : ''
+      return this.meta.total ? `Showing ${this.filteredMedia.length} out of ${this.meta.total}` : ''
     }
   },
 
   methods: {
     mediaUrls (media) {
       var urls = []
-      var newMedia = this.media.slice(this.media.indexOf(media))
+      var newMedia = this.filteredMedia.slice(this.filteredMedia.indexOf(media))
       newMedia.forEach((m) => {
         urls.push(m.src)
       })
       return urls
+    },
+
+    addStar (e, m) {
+      e.preventDefault()
+      if (this.stared.includes(m.id)) {
+        this.stared.splice(this.stared.indexOf(m.id), 1)
+      } else {
+        this.stared.push(m.id)
+      }
     },
 
     getMedia () {
@@ -98,7 +135,7 @@ export default {
       window.axios.get(this.metaLinks.next)
         .then((data) => {
           data.data.data.forEach((media) => {
-            this.media.push(media)
+            this.filteredMedia.push(media)
           })
           this.meta = data.data.meta
           this.metaLinks = data.data.links
