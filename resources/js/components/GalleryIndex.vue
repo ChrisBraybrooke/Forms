@@ -14,14 +14,17 @@
       <div
         v-for="m in mediaChunk"
         :key="m.id"
-        class="col-md-2">
+        class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
           <lightbox
             :thumbnail="m.src"
             :images="mediaUrls(m)">
               <lightbox-default-loader slot="loader"></lightbox-default-loader>
           </lightbox>
-          <a :href="m.src">Download</a>
-          <p>Uploaded By: <strong v-if="m.custom">{{ m.custom.name }}</strong></p>
+          <a
+            :href="m.src"
+            title="Download"><i class="far fa-download"></i></a>
+          <p class="mb-0"><i class="far fa-user-circle"></i> <strong v-if="m.custom">{{ m.custom.name }}</strong></p>
+          <p><small><i class="far fa-clock"></i> <strong v-if="m.created_at">{{ m.created_at }}</strong></small></p>
       </div>
     </div>
 
@@ -72,7 +75,7 @@ export default {
 
   computed: {
     chunkedMedia () {
-      return window._.chunk(this.media, 6)
+      return window._.chunk(this.media, 4)
     },
 
     displayData () {
