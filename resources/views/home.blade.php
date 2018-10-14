@@ -25,7 +25,9 @@
                         </div>
                     @endif
 
-                    See images that have been uploaded below, they are loaded in batches of 15. Please click "Load More" to load the next set of images.
+                    <p>See images that have been uploaded below, they are loaded in batches of 15. Please click "Load More" to load the next set of images.</p>
+
+                    <p>You can press <i class="text-primary far fa-star"></i> to save as a favourite.</p>
                 </div>
             </div>
         </div>

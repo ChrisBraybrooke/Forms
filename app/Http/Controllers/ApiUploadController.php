@@ -11,7 +11,7 @@ class ApiUploadController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'file' => 'file',
+            'file' => 'file|mimes:jpeg,bmp,png',
             'name' => 'required'
         ]);
 

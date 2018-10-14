@@ -157,6 +157,7 @@ export default {
         .then((data) => {
           this.loading = false
           this.$set(this.files[key], 'id', data.data.data.id)
+          this.errors = {}
           this.$forceUpdate()
         })
         .catch((data) => {
