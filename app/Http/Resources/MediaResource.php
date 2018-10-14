@@ -15,15 +15,12 @@ class MediaResource extends JsonResource
      */
     public function toArray($request)
     {
-        $adapter = Storage::disk('dropbox')->getAdapter();
-        $client = $adapter->getClient();
-        $link = $client->getTemporaryLink("/{$this->id}/{$this->file_name}");
-
         return [
           'id' => $this->id,
-          'src' => $link,
+          'src' => $this->getDropboxLink(),
           'title' => $this->name,
-          'custom' => $this->custom_properties
+          'custom' => $this->custom_properties,
+          'created_at' => $this->created_at->format('d/m/Y @ h:i:s A')
         ];
     }
 }
