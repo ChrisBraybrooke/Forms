@@ -10,6 +10,9 @@ require('./bootstrap');
 import 'babel-polyfill'
 window.Vue = require('vue');
 
+import Lightbox from 'vue-pure-lightbox'
+Vue.use(Lightbox)
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -18,6 +21,7 @@ window.Vue = require('vue');
 
 Vue.component('file-upload-button', require('./components/FileUploadButton.vue'));
 Vue.component('file-upload-component', require('./components/FileUploadComponent.vue'));
+Vue.component('gallery-index', require('./components/GalleryIndex.vue'));
 
 const app = new Vue({
     el: '#app'

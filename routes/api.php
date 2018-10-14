@@ -18,3 +18,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('upload', 'ApiUploadController@store');
+Route::get('uploads', 'ApiUploadController@index');

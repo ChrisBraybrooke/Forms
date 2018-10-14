@@ -56,7 +56,8 @@ return [
         ],
 
         'dropbox' => [
-            'driver' => 'dropbox'
+            'driver' => 'dropbox',
+            'root' => 'mavs-form'
         ],
 
         's3' => [

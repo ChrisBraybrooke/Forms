@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Gallery;
+use App\Http\Resources\MediaResource;
 
 class ApiUploadController extends Controller
 {
@@ -24,5 +25,12 @@ class ApiUploadController extends Controller
                          ->toMediaCollection('uploads');
 
         return ['data' => $media];
+    }
+
+    public function index(Request $request)
+    {
+        $gallery = Gallery::where(['name' => 'Uploads'])->first();
+
+        return MediaResource::collection($gallery->media()->paginate());
     }
 }
